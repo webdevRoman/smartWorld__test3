@@ -1,10 +1,10 @@
 <template>
   <header class="header">
     <div class="header-right">
-      <div class="header-logo">ToDo List</div>
+      <router-link class="header-logo" to="/" tag="div">ToDo List</router-link>
       <div class="header-username">"username"</div>
     </div>
-    <router-link class="btn header-btn" to="/login">Выйти</router-link>
+    <button class="btn header-btn">Выйти</button>
   </header>
 </template>
 
@@ -27,4 +27,5 @@ export default {};
     align-items: center
   &-logo
     margin-right: 30px
+    cursor: pointer
 </style>

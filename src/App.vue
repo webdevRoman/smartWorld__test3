@@ -1,15 +1,23 @@
 <template>
   <div id="app">
-    <Header></Header>
+    <Login v-if="!authorized"></Login>
+    <Header v-if="authorized"></Header>
     <router-view />
   </div>
 </template>
 
 <script>
-import Header from './components/Header'
+import Header from "./components/Header"
+import Login from "./components/Login"
 export default {
+  data() {
+    return {
+      authorized: false
+    }
+  },
   components: {
-    Header
+    Header,
+    Login
   }
 }
 </script>
@@ -18,6 +26,10 @@ export default {
 body
   margin: 0
   font-family: "Arial", sans-serif
+img
+  width: 100%
+h1, h2, h3
+  margin: 0
 .btn
   padding: 10px 25px
   border: none
