@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <Login v-if="!authorized"></Login>
-    <Header v-if="authorized"></Header>
+    <Login v-if="!isUserAuthenticated"></Login>
+    <Header v-if="isUserAuthenticated"></Header>
     <router-view />
   </div>
 </template>
@@ -10,14 +10,19 @@
 import Header from "./components/Header"
 import Login from "./components/Login"
 export default {
-  data() {
-    return {
-      authorized: false
-    }
-  },
+  // data() {
+  //   return {
+  //     authorized: false
+  //   }
+  // },
   components: {
     Header,
     Login
+  },
+  computed: {
+    isUserAuthenticated() {
+      return this.$store.getters.isUserAuthenticated
+    }
   }
 }
 </script>
@@ -26,6 +31,8 @@ export default {
 body
   margin: 0
   font-family: "Arial", sans-serif
+*
+  box-sizing: border-box
 img
   width: 100%
 h1, h2, h3
