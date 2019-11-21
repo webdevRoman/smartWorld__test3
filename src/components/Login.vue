@@ -1,4 +1,5 @@
 <template>
+<div class="overlay">
   <form action="#" class="login">
     <h2 class="login-title">Авторизация</h2>
     <div class="login-warning" v-if="error">{{ error }}</div>
@@ -16,6 +17,7 @@
     </div>
     <button type="submit" class="btn login-btn" @click.prevent="signin" :disabled="processing">Войти</button>
   </form>
+</div>
 </template>
 
 <script>
@@ -57,7 +59,7 @@ export default {
   padding: 30px 0 50px 0
   border: 2px solid #2c3e50
   border-radius: 10px
-  margin: 10% auto 0 auto
+  background-color: #fff
   &-title
     padding-bottom: 30px
     border-bottom: 2px solid #2c3e50

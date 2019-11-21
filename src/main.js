@@ -12,5 +12,25 @@ firebase.initializeApp(firebaseConfig)
 new Vue({
   router,
   store,
-  render: h => h(App)
+  render: h => h(App),
+  created() {
+    let vm = this
+    firebase.auth().onAuthStateChanged(function(user) {
+      vm.$store.dispatch('STATE_CHANGED', user)
+      // if (user) {
+      //   // User is signed in.
+      //   var displayName = user.displayName;
+      //   var email = user.email;
+      //   var emailVerified = user.emailVerified;
+      //   var photoURL = user.photoURL;
+      //   var isAnonymous = user.isAnonymous;
+      //   var uid = user.uid;
+      //   var providerData = user.providerData;
+      //   // ...
+      // } else {
+      //   // User is signed out.
+      //   // ...
+      // }
+    })
+  }
 }).$mount('#app')
