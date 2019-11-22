@@ -38,7 +38,7 @@ body
   font-family: "Arial", sans-serif
 *
   box-sizing: border-box
-img
+img, svg
   width: 100%
 h1, h2, h3
   margin: 0
