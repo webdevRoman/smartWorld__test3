@@ -3,11 +3,15 @@ import App from './App.vue'
 import router from './router'
 import store from './store/index'
 import firebase from 'firebase'
+import 'firebase/firestore'
 import firebaseConfig from './config/firebase'
 
 Vue.config.productionTip = false
 
-firebase.initializeApp(firebaseConfig)
+const firebaseApp = firebase.initializeApp(firebaseConfig)
+const db = firebaseApp.firestore()
+
+Vue.$db = db
 
 new Vue({
   router,
@@ -17,20 +21,8 @@ new Vue({
     let vm = this
     firebase.auth().onAuthStateChanged(function(user) {
       vm.$store.dispatch('STATE_CHANGED', user)
-      // if (user) {
-      //   // User is signed in.
-      //   var displayName = user.displayName;
-      //   var email = user.email;
-      //   var emailVerified = user.emailVerified;
-      //   var photoURL = user.photoURL;
-      //   var isAnonymous = user.isAnonymous;
-      //   var uid = user.uid;
-      //   var providerData = user.providerData;
-      //   // ...
-      // } else {
-      //   // User is signed out.
-      //   // ...
-      // }
     })
+
+    this.$store.dispatch('LOAD_LISTS')
   }
 }).$mount('#app')

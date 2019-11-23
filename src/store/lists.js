@@ -1,36 +1,32 @@
+import Vue from 'vue'
+
 export default {
   state: {
-    lists: [
-      {
-        id: 'skdjfhskdfjh1',
-        name: 'Дела 1',
-        state: 'process'
-      },
-      {
-        id: 'skdjfhskdfjh2',
-        name: 'Дела 2',
-        state: 'done'
-      },
-      {
-        id: 'skdjfhskdfjh3',
-        name: 'Дела 3',
-        state: 'empty'
-      },
-      {
-        id: 'skdjfhskdfjh4',
-        name: 'Дела 4',
-        state: 'done'
-      },
-      {
-        id: 'skdjfhskdfjh5',
-        name: 'Дела 5',
-        state: 'process'
-      }
-    ]
+    lists: []
   },
   mutations: {
     SET_LISTS(state, payload) {
       state.lists = payload
+    }
+  },
+  actions: {
+    LOAD_LISTS({commit}) {
+      Vue.$db.collection('lists')
+      .get()
+      .then(querySnapshot => {
+        let lists = []
+        querySnapshot.forEach(l => {
+          const data = l.data()
+          let list = {
+            id: l.id,
+            name: data.name,
+            tasks: data.tasks.slice()
+          }
+          lists.push(list)
+        })
+        commit('SET_LISTS', lists)
+      })
+      .catch(error => console.log(error))
     }
   },
   getters: {

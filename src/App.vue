@@ -2,10 +2,7 @@
   <div id="app">
     <Login v-if="!isUserAuthenticated"></Login>
     <Header v-if="isUserAuthenticated"></Header>
-    <div class="container" v-if="isUserAuthenticated">
-      <Lists></Lists>
-      <router-view />
-    </div>
+    <Lists v-if="isUserAuthenticated"></Lists>
   </div>
 </template>
 
@@ -14,11 +11,6 @@ import Header from "./components/Header"
 import Login from "./components/Login"
 import Lists from "./components/Lists"
 export default {
-  // data() {
-  //   return {
-  //     authorized: false
-  //   }
-  // },
   components: {
     Header,
     Login,
