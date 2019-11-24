@@ -51,10 +51,10 @@ h1, h2, h3
   &:hover
     background-color: darken(#2980b9, 10)
 .overlay
-  position: absolute
+  position: fixed
   top: 0
   left: 0
-  width: 100vw
+  width: 100%
   height: 100vh
   background-color: rgba(#000, 0.8)
   display: flex
@@ -79,5 +79,13 @@ h1, h2, h3
       transform: rotate(90deg)
   &-title
     font-size: 24px
+    margin-bottom: 30px
+  &-input
+    display: block
+    width: 100%
+    padding: 10px
+    border: 2px solid #2c3e50
+    border-radius: 5px
+    font-size: 16px
     margin-bottom: 30px
 </style>

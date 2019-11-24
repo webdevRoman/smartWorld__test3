@@ -1,7 +1,7 @@
 <template>
   <section class="list">
     <h2 class="list-title">{{ listName }}</h2>
-    <div class="list-items">
+    <div class="list-items" v-if="tasks.length > 0">
       <div class="list-item" v-for="(task, i) in tasks" :key="task.id">
         <div class="list-item__priority" v-if="task.priority"></div>
         <div class="list-item__block">
@@ -15,6 +15,7 @@
         </div>
       </div>
     </div>
+    <div class="list-noitems" v-else>В этом списке ещё нет задач</div>
   </section>
 </template>
 
@@ -24,7 +25,7 @@
     methods: {
       getTime(seconds) {
         let date = new Date(seconds * 1000)
-        return (date.getDay().length > 1 ? date.getDay() : '0' + date.getDay()) + '.' + date.getMonth() + '.' + date.getFullYear() + ' ' + date.getHours() + ':' + (date.getMinutes().length > 1 ? date.getMinutes() : '0' + date.getMinutes())
+        return (date.getDate().toString().length > 1 ? date.getDate().toString() : '0' + date.getDate().toString()) + '.' + (date.getMonth() + 1).toString() + '.' + date.getFullYear().toString() + ' ' + date.getHours().toString() + ':' + (date.getMinutes().toString().length > 1 ? date.getMinutes().toString() : '0' + date.getMinutes().toString())
       },
       generateCheckboxId(index) {
         return 'checkbox-' + index
@@ -73,6 +74,9 @@
       padding: 10px
       &:last-child
         margin-left: 10px
+  &-noitems
+    font-size: 20px
+    text-align: center
 
 .list-item__checkbox
   position: absolute

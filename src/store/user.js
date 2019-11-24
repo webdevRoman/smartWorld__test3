@@ -28,7 +28,6 @@ export default {
       commit('CLEAR_ERROR')
       firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
       .then(() => {
-        // commit('SET_USER', user.uid)
         commit('SET_PROCESSING', false)
       })  
       .catch(function(error) {
@@ -39,28 +38,18 @@ export default {
     SIGNOUT() {
       firebase.auth().signOut()
     },
-    STATE_CHANGED({commit}, payload) {
+    STATE_CHANGED({commit, dispatch}, payload) {
       if (payload) {
         commit('SET_USER', { uid: payload.uid, email: payload.email })
+        dispatch('LOAD_USER_DATA', payload.uid)
       } else {
         commit('UNSET_USER')
       }
     }
-    // SIGNIN({commit}, payload) {
-    //   commit('SET_PROCESSING', true)
-    //   firebase.auth().createUserWithEmailAndPassword(payload.email, payload.password)
-    //   .then(user => {
-    //     commit('SET_USER', user.uid)
-    //     commit('SET_PROCESSING', false)
-    //   })  
-    //   .catch(function(error) {
-    //     commit('SET_PROCESSING', false)
-    //     commit('SET_ERROR', error.message)
-    //   });
-    // }
   },
   getters: {
     isUserAuthenticated: (state) => state.user.isAuthenticated,
-    userLogin: (state) => state.user.login
+    userLogin: (state) => state.user.login,
+    userId: (state) => state.user.uid
   }
 }
