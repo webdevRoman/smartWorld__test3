@@ -56,6 +56,8 @@ export default {
   &-logo
     margin-right: 30px
     cursor: pointer
+.overlay
+  z-index: 10
 .popup
   &-signout
     &__btn

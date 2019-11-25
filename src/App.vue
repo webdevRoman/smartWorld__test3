@@ -88,4 +88,45 @@ h1, h2, h3
     border-radius: 5px
     font-size: 16px
     margin-bottom: 30px
+  &-delete
+    &__btn
+      &:first-child
+        margin-right: 30px
+  &-error
+    .popup-title
+      display: flex
+      align-items: center
+      text-align: left
+      margin-bottom: 0
+    &__cross
+      display: flex
+      justify-content: center
+      align-items: center
+      width: 50px
+      height: 50px
+      border-radius: 50%
+      background-color: rgba(#d50000, 0.4)
+      font-size: 42px
+      color: #d50000
+      margin-right: 20px
+  &-success
+    position: absolute
+    top: 10px
+    right: 10px
+    .popup-title
+      display: flex
+      align-items: center
+      text-align: left
+      margin-bottom: 0
+    &__tick
+      display: flex
+      justify-content: center
+      align-items: center
+      min-width: 50px
+      width: 50px
+      height: 50px
+      padding: 10px
+      border-radius: 50%
+      background-color: rgba(#2E7D32, 0.4)
+      margin-right: 20px
 </style>

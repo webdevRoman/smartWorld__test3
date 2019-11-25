@@ -1,34 +1,172 @@
 <template>
-  <section class="list">
-    <h2 class="list-title">{{ listName }}</h2>
-    <div class="list-items" v-if="tasks.length > 0">
-      <div class="list-item" v-for="(task, i) in tasks" :key="task.id">
-        <div class="list-item__priority" v-if="task.priority"></div>
-        <div class="list-item__block">
-          <input class="list-item__checkbox" type="checkbox" name="done" v-model="task.done" :id="generateCheckboxId(i)">
-          <label class="list-item__name" :for="generateCheckboxId(i)">{{ task.name }}</label>
-        </div>
-        <div class="list-item__block">
-          <div class="list-item__date">{{ getTime(task.time.seconds) }}</div>
-          <button class="btn list-item__btn"><img src="../assets/pen.svg" alt="Pen image"></button>
-          <button class="btn list-item__btn"><img src="../assets/bin.svg" alt="Bin image"></button>
-        </div>
+<section class="list">
+  <h2 class="list-title">{{ list.name }}</h2>
+  <div class="list-items" v-if="list.tasks.length > 0">
+    <div class="list-item" v-for="(task, i) in sortedTasks" :key="task.id">
+      <div class="list-item__priority" v-if="task.priority"></div>
+      <div class="list-item__block">
+        <input class="list-item__checkbox" type="checkbox" name="done" v-model="task.done" :id="generateCheckboxId(i)" @change="changeTaskDone(task.id)">
+        <label class="list-item__name" :for="generateCheckboxId(i)">{{ task.name }}</label>
+      </div>
+      <div class="list-item__block">
+        <div class="list-item__date">{{ getTime(task.time) }}</div>
+        <button class="btn list-item__btn" @click.prevent="showTaskPopup(task.id, task.name, task.priority)"><img src="../assets/pen.svg" alt="Pen image"></button>
+        <button class="btn list-item__btn" @click.prevent="showDeleteTaskPopup(task)"><img src="../assets/bin.svg" alt="Bin image"></button>
       </div>
     </div>
-    <div class="list-noitems" v-else>В этом списке ещё нет задач</div>
-  </section>
+  </div>
+  <div class="list-noitems" v-else>В этом списке ещё нет задач</div>
+  <button class="btn list-btn" @click.prevent="showTaskPopup(null, null, null)">+</button>
+
+  <div class="overlay" v-if="taskPopup">
+    <div class="popup popup-add_task">
+      <div class="popup-close" @click.prevent="taskPopup = false">&times;</div>
+      <div class="popup-title" v-if="addPopupFlag">Добавить дело</div>
+      <div class="popup-title" v-else>Изменить дело</div>
+      <input type="text" class="popup-input" placeholder="Название дела" v-model="newTaskName">
+      <div class="popup-priority">
+        <input type="checkbox" name="priority" id="priority-checkbox" class="list-item__checkbox" v-model="newTaskPriority">
+        <label for="priority-checkbox" class="popup-priority__label">Срочно</label>
+      </div>
+      <button class="btn popup-btn" @click.prevent="addTask" v-if="addPopupFlag">Добавить</button>
+      <button class="btn popup-btn" @click.prevent="editTask" v-else>Сохранить изменения</button>
+    </div>
+  </div>
+  <div class="overlay" v-if="deleteTaskPopup">
+    <div class="popup popup-delete">
+      <div class="popup-close" @click.prevent="deleteTaskPopup = false">&times;</div>
+      <div class="popup-title">
+        Вы действительно хотите удалить дело "{{ currentTask.name }}"?
+      </div>
+      <div>
+        <button class="btn popup-delete__btn" @click.prevent="deleteTask()">Да</button>
+        <button class="btn popup-delete__btn" @click.prevent="deleteTaskPopup = false">Нет</button>
+      </div>
+    </div>
+  </div>
+  <div class="overlay" v-if="errorPopup">
+    <div class="popup popup-error">
+      <div class="popup-close" @click.prevent="errorPopup = false">&times;</div>
+      <div class="popup-title">
+        <div class="popup-error__cross">&times;</div>
+        <div class="popup-error__message">{{ errorMessage }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="popup popup-success" v-if="successPopup">
+    <div class="popup-close" @click.prevent="successPopup = false">&times;</div>
+    <div class="popup-title">
+      <div class="popup-success__tick"><svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" fill="#2E7D32"><path d="M504.502,75.496c-9.997-9.998-26.205-9.998-36.204,0L161.594,382.203L43.702,264.311c-9.997-9.998-26.205-9.997-36.204,0 c-9.998,9.997-9.998,26.205,0,36.203l135.994,135.992c9.994,9.997,26.214,9.99,36.204,0L504.502,111.7 C514.5,101.703,514.499,85.494,504.502,75.496z"/></svg></div>
+      <div class="popup-success__message">{{ successMessage }}</div>
+    </div>
+  </div>
+</section>
 </template>
 
 <script>
   export default {
-    props: ['tasks', 'listName'],
+    props: ['list'],
+    data() {
+      return {
+        currentTask: null,
+        taskPopup: false,
+        deleteTaskPopup: false,
+        addPopupFlag: true,
+        newTaskName: '',
+        newTaskPriority: false,
+        taskId: null,
+        errorPopup: false,
+        errorMessage: null,
+        successPopup: false,
+        successMessage: null
+      }
+    },
     methods: {
-      getTime(seconds) {
-        let date = new Date(seconds * 1000)
-        return (date.getDate().toString().length > 1 ? date.getDate().toString() : '0' + date.getDate().toString()) + '.' + (date.getMonth() + 1).toString() + '.' + date.getFullYear().toString() + ' ' + date.getHours().toString() + ':' + (date.getMinutes().toString().length > 1 ? date.getMinutes().toString() : '0' + date.getMinutes().toString())
+      getTime(milliseconds) {
+        let date = new Date(milliseconds)
+        return (date.getDate().toString().length > 1 ? date.getDate().toString() : '0' + date.getDate().toString()) + '.' + (date.getMonth() + 1).toString() + '.' + date.getFullYear().toString() + ' ' + (date.getHours().toString().length > 1 ? date.getHours().toString() : '0' + date.getHours().toString()) + ':' + (date.getMinutes().toString().length > 1 ? date.getMinutes().toString() : '0' + date.getMinutes().toString())
       },
       generateCheckboxId(index) {
         return 'checkbox-' + index
+      },
+      showTaskPopup(taskId, taskName, taskPriority) {
+        this.taskId = taskId
+        if (taskName != null) {
+          this.addPopupFlag = false
+          this.newTaskName = taskName
+          this.newTaskPriority = taskPriority
+        } else {
+          this.addPopupFlag = true
+          this.newTaskName = ''
+          this.newTaskPriority = false
+        }
+        this.taskPopup = true
+      },
+      addTask() {
+        if (!this.newTaskName) {
+          this.errorMessage = 'Введите название дела'
+          this.errorPopup = true
+          setTimeout(() => {
+            this.errorPopup = false
+          }, 5000)
+        } else {
+          this.$store.dispatch('ADD_USER_TASK', { listId: this.list.id, taskName: this.newTaskName, taskPriority: this.newTaskPriority })
+          this.taskPopup = false
+          this.successMessage = `Дело "${this.newTaskName}" добавлено`
+          this.newTaskName = ''
+          this.successPopup = true
+          setTimeout(() => {
+            this.successPopup = false
+          }, 3000)
+        }
+      },
+      editTask() {
+        if (!this.newTaskName) {
+          this.errorMessage = 'Введите название дела'
+          this.errorPopup = true
+          setTimeout(() => {
+            this.errorPopup = false
+          }, 5000)
+        } else {
+          this.$store.dispatch('EDIT_USER_TASK', { listId: this.list.id, taskId: this.taskId, taskName: this.newTaskName, taskPriority: this.newTaskPriority })
+          this.taskPopup = false
+          this.successMessage = `Дело "${this.newTaskName}" изменено`
+          this.newTaskName = ''
+          this.successPopup = true
+          setTimeout(() => {
+            this.successPopup = false
+          }, 3000)
+        }
+      },
+      changeTaskDone(taskId) {
+        this.$store.dispatch('CHANGE_TASK_DONE', { listId: this.list.id, taskId: taskId })
+      },
+      showDeleteTaskPopup(task) {
+        this.currentTask = task
+        this.newTaskName = task.name
+        this.taskId = task.id
+        this.deleteTaskPopup = true
+      },
+      deleteTask() {
+        this.$store.dispatch('DELETE_USER_TASK', { listId: this.list.id, taskId: this.taskId })
+        this.deleteTaskPopup = false
+        this.successMessage = `Дело "${this.newTaskName}" удалено`
+        this.newTaskName = ''
+        this.successPopup = true
+        setTimeout(() => {
+          this.successPopup = false
+        }, 3000)
+      }
+    },
+    computed: {
+      storeTasks() {
+        let storeTasks = this.$store.getters.currentList.tasks
+        return storeTasks
+      },
+      sortedTasks() {
+        let sortedTasks = this.storeTasks
+        sortedTasks = sortedTasks.sort((a, b) => b.time - a.time)
+        return sortedTasks
       }
     }
   }
@@ -36,7 +174,9 @@
 
 <style scoped lang="sass">
 .list
+  min-height: 90vh
   padding: 50px 30px
+  position: relative
   &-title
     font-size: 26px
     font-weight: normal
@@ -77,6 +217,15 @@
   &-noitems
     font-size: 20px
     text-align: center
+  &-btn
+    display: flex
+    justify-content: center
+    align-items: center
+    padding: 0 10px 5px 10px
+    font-size: 40px
+    position: absolute
+    bottom: 30px
+    left: 30px
 
 .list-item__checkbox
   position: absolute
@@ -110,4 +259,11 @@
   transition: 0.2s
 .list-item__checkbox:checked + label:after
   opacity: 1
+
+.popup
+  width: 500px
+  &-priority
+    margin-bottom: 30px
+    &__label
+      font-size: 18px
 </style>

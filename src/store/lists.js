@@ -11,7 +11,6 @@ export default {
   },
   actions: {
     LOAD_LISTS({commit}, payload) {
-      // console.log(payload)
       if (payload) {
         Vue.$db.collection(payload)
           .get()

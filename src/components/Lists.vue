@@ -25,7 +25,7 @@
   </div>
   <div class="loading" v-else>Загружаем данные...</div>
   <div v-if="currentList" class="right">
-    <Tasks :tasks="currentList.tasks" :listName="currentList.name"></Tasks>
+    <Tasks :list="currentList"></Tasks>
   </div>
   <div v-else class="right-choose">
     Выберите список дел
@@ -96,7 +96,8 @@
     },
     methods: {
       setCurrentList(list) {
-        this.currentList = list
+        this.$store.dispatch('SET_CURRENT_LIST', list)
+        this.currentList = this.$store.getters.currentList
       },
       showListPopup(listName, listId) {
         this.listId = listId
@@ -265,6 +266,7 @@
     left: 30px
 .right
   flex-basis: 65%
+  min-height: 90vh
   &-choose
     flex-basis: 65%
     min-height: 90vh
@@ -282,47 +284,6 @@
   animation: glow  1.5s infinite ease-in-out
 .popup
   width: 500px
-  &-delete
-    &__btn
-      &:first-child
-        margin-right: 30px
-  &-error
-    .popup-title
-      display: flex
-      align-items: center
-      text-align: left
-      margin-bottom: 0
-    &__cross
-      display: flex
-      justify-content: center
-      align-items: center
-      width: 50px
-      height: 50px
-      border-radius: 50%
-      background-color: rgba(#d50000, 0.4)
-      font-size: 42px
-      color: #d50000
-      margin-right: 20px
-  &-success
-    position: absolute
-    top: 10px
-    right: 10px
-    .popup-title
-      display: flex
-      align-items: center
-      text-align: left
-      margin-bottom: 0
-    &__tick
-      display: flex
-      justify-content: center
-      align-items: center
-      min-width: 50px
-      width: 50px
-      height: 50px
-      padding: 10px
-      border-radius: 50%
-      background-color: rgba(#2E7D32, 0.4)
-      margin-right: 20px
 
 @keyframes glow
   from
