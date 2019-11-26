@@ -5,7 +5,7 @@
       <router-link class="header-logo" to="/" tag="div">ToDo List</router-link>
       <div class="header-username">{{ login }}</div>
     </div>
-    <button class="btn header-btn" @click.prevent="signoutConfirm = true">Выйти</button>
+    <button class="btn header-btn" @click.prevent="signoutConfirm = true" :disabled="processing">Выйти</button>
   </header>
   <div class="overlay" v-if="signoutConfirm">
     <div class="popup popup-signout">
@@ -35,6 +35,9 @@ export default {
   computed: {
     login() {
       return this.$store.getters.userLogin
+    },
+    processing() {
+      return this.$store.getters.getProcessing
     }
   }
 }

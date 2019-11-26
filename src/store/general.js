@@ -1,7 +1,10 @@
+import Vue from 'vue'
+
 export default {
   state: {
     processing: false,
-    error: null
+    error: null,
+    loading: {}
   },
   mutations: {
     SET_PROCESSING(state, payload) {
@@ -12,10 +15,14 @@ export default {
     },
     CLEAR_ERROR(state) {
       state.error = null
+    },
+    SET_LOADING(state, payload) {
+      Vue.set(state, 'loading', payload)
     }
   },
   getters: {
     getProcessing: (state) => state.processing,
-    getError: (state) => state.error
+    getError: (state) => state.error,
+    getLoading: (state) => state.loading
   }
 }

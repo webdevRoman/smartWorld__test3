@@ -1,6 +1,6 @@
 <template>
 <div class="container">
-  <div class="left" v-if="lists">
+  <div class="left">
     <div class="left-filter">
       <select name="filter" id="filter" class="left-filter__select" v-model="status">
         <option value="process" selected>Неисполненные</option>
@@ -9,7 +9,7 @@
       </select>
     </div>
     <div class="left-lists">
-      <div class="left-list" v-for="list in filteredLists" :key="list.id" @click.prevent="setCurrentList(list)">
+      <div :class="listClass(list)" v-for="list in filteredLists" :key="list.id" @click.prevent="setCurrentList(list)">
         <div class="left-list__name">{{ list.name }}</div>
         <div class="left-list__buttons">
           <button class="btn left-list__btn" @click.prevent="showListPopup(list.name, list.id)">
@@ -23,7 +23,6 @@
     </div>
     <button class="btn left-btn" @click.prevent="showListPopup(null, null)">+</button>
   </div>
-  <div class="loading" v-else>Загружаем данные...</div>
   <div v-if="currentList" class="right">
     <Tasks :list="currentList"></Tasks>
   </div>
@@ -81,7 +80,6 @@
     data() {
       return {
         status: 'process',
-        statuses: ['processing', 'done', 'empty'],
         currentList: null,
         listPopup: false,
         deleteListPopup: false,
@@ -112,39 +110,79 @@
       },
       addList() {
         if (!this.newListName) {
-          this.errorMessage = 'Введите название списка дел'
+          this.errorMessage = 'Поле "Название списка дел" должно быть заполнено'
+          this.errorPopup = true
+          setTimeout(() => {
+            this.errorPopup = false
+          }, 5000)
+        } else if (this.newListName.length > 30) {
+          this.errorMessage = 'В поле "Название списка дел" должно быть не более 30 символов'
           this.errorPopup = true
           setTimeout(() => {
             this.errorPopup = false
           }, 5000)
         } else {
-          this.$store.dispatch('ADD_USER_LIST', this.newListName)
-          this.listPopup = false
-          this.successMessage = `Список дел "${this.newListName}" добавлен`
-          this.newListName = ''
-          this.successPopup = true
-          setTimeout(() => {
-            this.successPopup = false
-          }, 3000)
+          let lists = this.$store.getters.getLists
+          let flag = true
+          for (let key in lists) {
+            if (lists[key].name == this.newListName)
+              flag = false
+          }
+          if (!flag) {
+            this.errorMessage = 'Такой список дел уже существует'
+            this.errorPopup = true
+            setTimeout(() => {
+              this.errorPopup = false
+            }, 5000)
+          } else {
+            this.$store.dispatch('ADD_USER_LIST', this.newListName)
+            this.listPopup = false
+            this.successMessage = `Список дел "${this.newListName}" добавлен`
+            this.newListName = ''
+            this.successPopup = true
+            setTimeout(() => {
+              this.successPopup = false
+            }, 3000)
+          }
         }
       },
       editList() {
         if (!this.newListName) {
-          this.errorMessage = 'Введите название списка дел'
+          this.errorMessage = 'Поле "Название списка дел" должно быть заполнено'
+          this.errorPopup = true
+          setTimeout(() => {
+            this.errorPopup = false
+          }, 5000)
+        } else if (this.newListName.length > 30) {
+          this.errorMessage = 'В поле "Название списка дел" должно быть не более 30 символов'
           this.errorPopup = true
           setTimeout(() => {
             this.errorPopup = false
           }, 5000)
         } else {
-          this.$store.dispatch('EDIT_USER_LIST', { listId: this.listId, listName: this.newListName })
-          this.listPopup = false
-          this.successMessage = `Список дел "${this.newListName}" изменён`
-          this.newListName = null
-          this.currentList = null
-          this.successPopup = true
-          setTimeout(() => {
-            this.successPopup = false
-          }, 3000)
+          let lists = this.$store.getters.getLists
+          let flag = true
+          for (let key in lists) {
+            if (lists[key].name == this.newListName)
+              flag = false
+          }
+          if (!flag) {
+            this.errorMessage = 'Такой список дел уже существует'
+            this.errorPopup = true
+            setTimeout(() => {
+              this.errorPopup = false
+            }, 5000)
+          } else {
+            this.$store.dispatch('EDIT_USER_LIST', { listId: this.listId, listName: this.newListName })
+            this.listPopup = false
+            this.successMessage = `Список дел "${this.newListName}" изменён`
+            this.newListName = null
+            this.currentList = null
+            this.successPopup = true
+            setTimeout(() => {
+              this.successPopup = false
+            }, 3000)
+          }
         }
       },
       showDeleteListPopup(list) {
@@ -162,44 +200,51 @@
         setTimeout(() => {
           this.successPopup = false
         }, 3000)
+      },
+      listClass(list) {
+        if (!list.tasks.length) {
+          return 'left-list left-list_empty'
+        } else if(list.tasks.every(t => t.done)) {
+          return 'left-list left-list_done'
+        } else {
+          return 'left-list left-list_process'
+        }
       }
     },
     computed: {
-      lists() {
-        return this.$store.getters.getLists
-      },
       filteredLists() {
-        let lists = this.lists
+        let lists = this.$store.getters.getLists
         let filteredLists = []
         if (this.status == 'process') {
-          lists.forEach(l => {
-            if (!l.tasks.length) {
-              filteredLists.push(l)
+          for (let key in lists) {
+            if (!lists[key].tasks.length) {
+              filteredLists.push({ id: key, name: lists[key].name, tasks: lists[key].tasks })
             } else {
-              for (let i = 0; i < l.tasks.length; i++) {
-                if (!l.tasks[i].done) {
-                  filteredLists.push(l)
+              for (let i = 0; i < lists[key].tasks.length; i++) {
+                if (!lists[key].tasks[i].done) {
+                  filteredLists.push({ id: key, name: lists[key].name, tasks: lists[key].tasks })
                   break
                 }
               }
             }
-          })
+          }
         } else if (this.status == 'done') {
-          lists.forEach(l => {
-            if (l.tasks.length) {
+          for (let key in lists) {
+            if (lists[key].tasks.length) {
               let flag = true
-              for (let i = 0; i < l.tasks.length; i++) {
-                if (!l.tasks[i].done) {
+              for (let i = 0; i < lists[key].tasks.length; i++) {
+                if (!lists[key].tasks[i].done) {
                   flag = false
                   break
                 }
               }
               if (flag)
-                filteredLists.push(l)
+                filteredLists.push({ id: key, name: lists[key].name, tasks: lists[key].tasks })
             }
-          })
+          }
         } else {
-          filteredLists = lists
+          for (let key in lists)
+            filteredLists.push({ id: key, name: lists[key].name, tasks: lists[key].tasks })
         }
         return filteredLists
       }
@@ -255,6 +300,12 @@
       padding: 10px
       &:first-child
         margin-right: 10px
+    &_empty
+      background-color: #fff
+    &_done
+      background-color: grey
+    &_process
+      background-color: green
   &-btn
     display: flex
     justify-content: center
@@ -274,22 +325,6 @@
     justify-content: center
     align-items: center
     font-size: 32px
-.loading
-  flex-basis: 65%
-  min-height: 95vh
-  display: flex
-  justify-content: center
-  align-items: center
-  font-size: 32px
-  animation: glow  1.5s infinite ease-in-out
 .popup
   width: 500px
-
-@keyframes glow
-  from
-    opacity: 1
-  50%
-    opacity: 0.3
-  to
-    opacity: 1
 </style>

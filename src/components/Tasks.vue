@@ -5,7 +5,7 @@
     <div class="list-item" v-for="(task, i) in sortedTasks" :key="task.id">
       <div class="list-item__priority" v-if="task.priority"></div>
       <div class="list-item__block">
-        <input class="list-item__checkbox" type="checkbox" name="done" v-model="task.done" :id="generateCheckboxId(i)" @change="changeTaskDone(task.id)">
+        <input class="list-item__checkbox" type="checkbox" name="done" v-model="task.done" :id="generateCheckboxId(i)" @click.prevent="changeTaskDone(task.id, $event)">
         <label class="list-item__name" :for="generateCheckboxId(i)">{{ task.name }}</label>
       </div>
       <div class="list-item__block">
@@ -104,7 +104,19 @@
       },
       addTask() {
         if (!this.newTaskName) {
-          this.errorMessage = 'Введите название дела'
+          this.errorMessage = 'Поле "Название дела" должно быть заполнено'
+          this.errorPopup = true
+          setTimeout(() => {
+            this.errorPopup = false
+          }, 5000)
+        } else if (this.newTaskName.length > 30) {
+          this.errorMessage = 'В поле "Название дела" должно быть не более 30 символов'
+          this.errorPopup = true
+          setTimeout(() => {
+            this.errorPopup = false
+          }, 5000)
+        } else if (!(this.$store.getters.currentList.tasks.every(t => t.name != this.newTaskName))) {
+          this.errorMessage = 'Такое дело уже существует'
           this.errorPopup = true
           setTimeout(() => {
             this.errorPopup = false
@@ -122,7 +134,19 @@
       },
       editTask() {
         if (!this.newTaskName) {
-          this.errorMessage = 'Введите название дела'
+          this.errorMessage = 'Поле "Название дела" должно быть заполнено'
+          this.errorPopup = true
+          setTimeout(() => {
+            this.errorPopup = false
+          }, 5000)
+        } else if (this.newTaskName.length > 30) {
+          this.errorMessage = 'В поле "Название дела" должно быть не более 30 символов'
+          this.errorPopup = true
+          setTimeout(() => {
+            this.errorPopup = false
+          }, 5000)
+        } else if (!(this.$store.getters.currentList.tasks.every(t => (t.name != this.newTaskName && t.id != this.taskId) || (t.name == this.newTaskName && t.id == this.taskId)))) {
+          this.errorMessage = 'Такое дело уже существует'
           this.errorPopup = true
           setTimeout(() => {
             this.errorPopup = false
@@ -138,8 +162,19 @@
           }, 3000)
         }
       },
-      changeTaskDone(taskId) {
-        this.$store.dispatch('CHANGE_TASK_DONE', { listId: this.list.id, taskId: taskId })
+      changeTaskDone(taskId, event) {
+        for (let i = 0; i < this.$store.getters.currentList.tasks.length; i++) {
+          let t = this.$store.getters.currentList.tasks[i]
+          if (t.id == taskId) {
+            if (t.done) {
+              break
+            } else {
+              event.target.checked = true
+              this.$store.dispatch('CHANGE_TASK_DONE', { listId: this.list.id, taskId: taskId })
+              break
+            }
+          }
+        }
       },
       showDeleteTaskPopup(task) {
         this.currentTask = task

@@ -9,7 +9,6 @@ export default {
       Vue.set(state.currentList, 'id', payload.id)
       Vue.set(state.currentList, 'name', payload.name)
       Vue.set(state.currentList, 'tasks', payload.tasks)
-      // state.currentList = payload
     }
   },
   actions: {
@@ -18,7 +17,7 @@ export default {
       dispatch('LOAD_LISTS', payload)
       commit('SET_PROCESSING', false)
     },
-    ADD_USER_LIST({commit, dispatch, getters}, payload) {
+    ADD_USER_LIST({commit, getters}, payload) {
       commit('SET_PROCESSING', true)
       let userDataRef = Vue.$db.collection(getters.userId)
       let list = {
@@ -27,7 +26,21 @@ export default {
       }
       userDataRef.add(list)
       .then(() => {
-        dispatch('LOAD_LISTS', getters.userId)
+        userDataRef.get()
+        .then(querySnapshot => {
+          let lists = []
+          querySnapshot.forEach(l => {
+            const data = l.data()
+            let list = {
+              id: l.id,
+              name: data.name,
+              tasks: data.tasks ? data.tasks.slice() : []
+            }
+            lists.push(list)
+          })
+          commit('SET_LISTS', lists)
+        })
+        .catch((error) => console.log(error))
         commit('SET_PROCESSING', false)
       })
       .catch((error) => {
@@ -35,14 +48,29 @@ export default {
         commit('SET_PROCESSING', false)
       })
     },
-    EDIT_USER_LIST({commit, dispatch, getters}, payload) {
+    EDIT_USER_LIST({commit, getters}, payload) {
       commit('SET_PROCESSING', true)
-      let userDataRef = Vue.$db.collection(getters.userId).doc(payload.listId)
-      userDataRef.update({
+      let userDataRef = Vue.$db.collection(getters.userId)
+      let userDataRefDoc = Vue.$db.collection(getters.userId).doc(payload.listId)
+      userDataRefDoc.update({
         name: payload.listName
       })
       .then(() => {
-        dispatch('LOAD_LISTS', getters.userId)
+        userDataRef.get()
+        .then(querySnapshot => {
+          let lists = []
+          querySnapshot.forEach(l => {
+            const data = l.data()
+            let list = {
+              id: l.id,
+              name: data.name,
+              tasks: data.tasks ? data.tasks.slice() : []
+            }
+            lists.push(list)
+          })
+          commit('SET_LISTS', lists)
+        })
+        .catch((error) => console.log(error))
         commit('SET_PROCESSING', false)
       })
       .catch((error) => {
@@ -50,11 +78,26 @@ export default {
         commit('SET_PROCESSING', false)
       })
     },
-    DELETE_USER_LIST({commit, dispatch, getters}, payload) {
+    DELETE_USER_LIST({commit, getters}, payload) {
       commit('SET_PROCESSING', true)
+      let userDataRef = Vue.$db.collection(getters.userId)
       Vue.$db.collection(getters.userId).doc(payload).delete()
       .then(() => {
-        dispatch('LOAD_LISTS', getters.userId)
+        userDataRef.get()
+        .then(querySnapshot => {
+          let lists = []
+          querySnapshot.forEach(l => {
+            const data = l.data()
+            let list = {
+              id: l.id,
+              name: data.name,
+              tasks: data.tasks ? data.tasks.slice() : []
+            }
+            lists.push(list)
+          })
+          commit('SET_LISTS', lists)
+        })
+        .catch((error) => console.log(error))
         commit('SET_PROCESSING', false)
       })
       .catch((error) => {
@@ -89,7 +132,18 @@ export default {
             tasks: list.tasks
           })
           .then(() => {
-            dispatch('LOAD_LISTS', getters.userId)
+            let oldLists = getters.getLists
+            let newLists = []
+            let i = 0
+            for (let key in oldLists) {
+              newLists[i] = {}
+              newLists[i].id = key
+              newLists[i].name = oldLists[key].name
+              newLists[i].tasks = oldLists[key].tasks
+              i++
+            }
+            dispatch('LOAD_LISTS_PASSIVE', getters.userId)
+            commit('SET_LISTS', newLists)
             commit('SET_CURRENT_LIST', list)
             commit('SET_PROCESSING', false)
           })
@@ -122,7 +176,18 @@ export default {
             tasks: list.tasks
           })
           .then(() => {
-            dispatch('LOAD_LISTS', getters.userId)
+            let oldLists = getters.getLists
+            let newLists = []
+            let i = 0
+            for (let key in oldLists) {
+              newLists[i] = {}
+              newLists[i].id = key
+              newLists[i].name = oldLists[key].name
+              newLists[i].tasks = oldLists[key].tasks
+              i++
+            }
+            dispatch('LOAD_LISTS_PASSIVE', getters.userId)
+            commit('SET_LISTS', newLists)
             commit('SET_CURRENT_LIST', list)
             commit('SET_PROCESSING', false)
           })
@@ -132,9 +197,13 @@ export default {
           })
         } else {
           console.log("Can't get tasks from DB");
+          commit('SET_PROCESSING', false)
         }
       })
-      .catch((error) => console.log(error))
+      .catch((error) => {
+        console.log(error)
+        commit('SET_PROCESSING', false)
+      })
     },
     CHANGE_TASK_DONE({commit, dispatch, getters}, payload) {
       commit('SET_PROCESSING', true)
@@ -147,14 +216,25 @@ export default {
           list.id = payload.listId
           list.tasks.forEach(t => {
             if (t.id == payload.taskId) {
-              t.done = !t.done
+              t.done = true
             }
           })
           userDataRef.update({
             tasks: list.tasks
           })
           .then(() => {
-            dispatch('LOAD_LISTS', getters.userId)
+            let oldLists = getters.getLists
+            let newLists = []
+            let i = 0
+            for (let key in oldLists) {
+              newLists[i] = {}
+              newLists[i].id = key
+              newLists[i].name = oldLists[key].name
+              newLists[i].tasks = oldLists[key].tasks
+              i++
+            }
+            dispatch('LOAD_LISTS_PASSIVE', getters.userId)
+            commit('SET_LISTS', newLists)
             commit('SET_CURRENT_LIST', list)
             commit('SET_PROCESSING', false)
           })
@@ -164,9 +244,13 @@ export default {
           })
         } else {
           console.log("Can't get tasks from DB");
+          commit('SET_PROCESSING', false)
         }
       })
-      .catch((error) => console.log(error))
+      .catch((error) => {
+        console.log(error)
+        commit('SET_PROCESSING', false)
+      })
     },
     DELETE_USER_TASK({commit, dispatch, getters}, payload) {
       commit('SET_PROCESSING', true)
@@ -190,7 +274,18 @@ export default {
             tasks: list.tasks
           })
           .then(() => {
-            dispatch('LOAD_LISTS', getters.userId)
+            let oldLists = getters.getLists
+            let newLists = []
+            let i = 0
+            for (let key in oldLists) {
+              newLists[i] = {}
+              newLists[i].id = key
+              newLists[i].name = oldLists[key].name
+              newLists[i].tasks = oldLists[key].tasks
+              i++
+            }
+            dispatch('LOAD_LISTS_PASSIVE', getters.userId)
+            commit('SET_LISTS', newLists)
             commit('SET_CURRENT_LIST', list)
             commit('SET_PROCESSING', false)
           })
@@ -200,26 +295,14 @@ export default {
           })
         } else {
           console.log("Can't get tasks from DB");
+          commit('SET_PROCESSING', false)
         }
       })
-      .catch((error) => console.log(error))
-    },
-    // LOAD_USER_DATA({commit}, payload) {
-    //   commit('SET_PROCESSING', true)
-    //   let userDataRef = Vue.$db.collection(payload)
-    //   userDataRef.get()
-    //   .then((data) => {
-    //     let userData = data.exists ? data.data() : defaultUserData
-    //     if (userData.lists)
-    //       userData.lists = {}
-    //     commit('SET_USER_DATA', userData)
-    //     commit('SET_PROCESSING', false)
-    //   })
-    //   .catch((error) => {
-    //     console.log(error)
-    //     commit('SET_PROCESSING', false)
-    //   })
-    // }
+      .catch((error) => {
+        console.log(error)
+        commit('SET_PROCESSING', false)
+      })
+    }
   },
   getters: {
     currentList: (state) => state.currentList

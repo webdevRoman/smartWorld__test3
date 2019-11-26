@@ -35,16 +35,20 @@ export default {
         commit('SET_ERROR', error.message)
       });
     },
-    SIGNOUT() {
+    SIGNOUT({commit}) {
+      commit('SET_PROCESSING', true)
       firebase.auth().signOut()
+      commit('SET_PROCESSING', false)
     },
     STATE_CHANGED({commit, dispatch}, payload) {
+      commit('SET_PROCESSING', true)
       if (payload) {
         commit('SET_USER', { uid: payload.uid, email: payload.email })
         dispatch('LOAD_USER_DATA', payload.uid)
       } else {
         commit('UNSET_USER')
       }
+      commit('SET_PROCESSING', false)
     }
   },
   getters: {

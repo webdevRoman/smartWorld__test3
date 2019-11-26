@@ -17,6 +17,16 @@
     </div>
     <button type="submit" class="btn login-btn" @click.prevent="signin" :disabled="processing">Войти</button>
   </form>
+
+  <div class="overlay" v-if="errorPopup">
+    <div class="popup popup-error">
+      <div class="popup-close" @click.prevent="errorPopup = false">&times;</div>
+      <div class="popup-title">
+        <div class="popup-error__cross">&times;</div>
+        <div class="popup-error__message">{{ errorMessage }}</div>
+      </div>
+    </div>
+  </div>
 </div>
 </template>
 
@@ -25,12 +35,22 @@ export default {
   data() {
     return {
       email: null,
-      password: null
+      password: null,
+      errorPopup: false,
+      errorMessage: null
     }
   },
   methods: {
     signin() {
-      this.$store.dispatch('SIGNIN', { email: this.email, password: this.password })
+      if (!this.email) {
+        this.errorMessage = 'Введите e-mail'
+        this.errorPopup = true
+      } else if (!this.password) {
+        this.errorMessage = 'Введите пароль'
+        this.errorPopup = true
+      } else {
+        this.$store.dispatch('SIGNIN', { email: this.email, password: this.password })
+      }
     }
   },
   computed: {
@@ -39,17 +59,8 @@ export default {
     },
     processing() {
       return this.$store.getters.getProcessing
-    },
-    // isUserAuthenticated() {
-    //   return this.$store.getters.isUserAuthenticated
-    // }
-  },
-  // watch: {
-  //   isUserAuthenticated(val) {
-  //     if (val === true)
-  //       this.$router.push('/')
-  //   }
-  // }
+    }
+  }
 }
 </script>
 

@@ -1,8 +1,11 @@
 <template>
   <div id="app">
-    <Login v-if="!isUserAuthenticated"></Login>
-    <Header v-if="isUserAuthenticated"></Header>
-    <Lists v-if="isUserAuthenticated"></Lists>
+    <div class="loading" v-if="loadingData">Загружаем данные...</div>
+    <Login v-else-if="!isUserAuthenticated"></Login>
+    <div class="app" v-else>
+      <Header></Header>
+      <Lists></Lists>
+    </div>
   </div>
 </template>
 
@@ -19,6 +22,9 @@ export default {
   computed: {
     isUserAuthenticated() {
       return this.$store.getters.isUserAuthenticated
+    },
+    loadingData() {
+      return this.$store.getters.getLoading
     }
   }
 }
@@ -93,6 +99,7 @@ h1, h2, h3
       &:first-child
         margin-right: 30px
   &-error
+    width: 500px
     .popup-title
       display: flex
       align-items: center
@@ -110,6 +117,7 @@ h1, h2, h3
       color: #d50000
       margin-right: 20px
   &-success
+    width: 500px
     position: absolute
     top: 10px
     right: 10px
@@ -129,4 +137,19 @@ h1, h2, h3
       border-radius: 50%
       background-color: rgba(#2E7D32, 0.4)
       margin-right: 20px
+.loading
+  min-height: 95vh
+  display: flex
+  justify-content: center
+  align-items: center
+  font-size: 32px
+  animation: glow  1.5s infinite ease-in-out
+
+@keyframes glow
+  from
+    opacity: 1
+  50%
+    opacity: 0.3
+  to
+    opacity: 1
 </style>
