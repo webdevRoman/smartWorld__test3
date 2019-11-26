@@ -121,29 +121,21 @@
           setTimeout(() => {
             this.errorPopup = false
           }, 5000)
+        } else if (!(this.$store.getters.getLists.every(l => l.name != this.newListName))) {
+          this.errorMessage = 'Такой список дел уже существует'
+          this.errorPopup = true
+          setTimeout(() => {
+            this.errorPopup = false
+          }, 5000)
         } else {
-          let lists = this.$store.getters.getLists
-          let flag = true
-          for (let key in lists) {
-            if (lists[key].name == this.newListName)
-              flag = false
-          }
-          if (!flag) {
-            this.errorMessage = 'Такой список дел уже существует'
-            this.errorPopup = true
-            setTimeout(() => {
-              this.errorPopup = false
-            }, 5000)
-          } else {
-            this.$store.dispatch('ADD_USER_LIST', this.newListName)
-            this.listPopup = false
-            this.successMessage = `Список дел "${this.newListName}" добавлен`
-            this.newListName = ''
-            this.successPopup = true
-            setTimeout(() => {
-              this.successPopup = false
-            }, 3000)
-          }
+          this.$store.dispatch('ADD_USER_LIST', this.newListName)
+          this.listPopup = false
+          this.successMessage = `Список дел "${this.newListName}" добавлен`
+          this.newListName = ''
+          this.successPopup = true
+          setTimeout(() => {
+            this.successPopup = false
+          }, 3000)
         }
       },
       editList() {
@@ -159,30 +151,22 @@
           setTimeout(() => {
             this.errorPopup = false
           }, 5000)
+        } else if (!(this.$store.getters.getLists.every(l => l.name != this.newListName))) {
+          this.errorMessage = 'Такой список дел уже существует'
+          this.errorPopup = true
+          setTimeout(() => {
+            this.errorPopup = false
+          }, 5000)
         } else {
-          let lists = this.$store.getters.getLists
-          let flag = true
-          for (let key in lists) {
-            if (lists[key].name == this.newListName)
-              flag = false
-          }
-          if (!flag) {
-            this.errorMessage = 'Такой список дел уже существует'
-            this.errorPopup = true
-            setTimeout(() => {
-              this.errorPopup = false
-            }, 5000)
-          } else {
-            this.$store.dispatch('EDIT_USER_LIST', { listId: this.listId, listName: this.newListName })
-            this.listPopup = false
-            this.successMessage = `Список дел "${this.newListName}" изменён`
-            this.newListName = null
-            this.currentList = null
-            this.successPopup = true
-            setTimeout(() => {
-              this.successPopup = false
-            }, 3000)
-          }
+          this.$store.dispatch('EDIT_USER_LIST', { listId: this.listId, listName: this.newListName })
+          this.listPopup = false
+          this.successMessage = `Список дел "${this.newListName}" изменён`
+          this.newListName = null
+          this.currentList = null
+          this.successPopup = true
+          setTimeout(() => {
+            this.successPopup = false
+          }, 3000)
         }
       },
       showDeleteListPopup(list) {
@@ -212,42 +196,47 @@
       }
     },
     computed: {
+      // lists() {
+      //   return this.$store.getters.getLists
+      // },
       filteredLists() {
         let lists = this.$store.getters.getLists
         let filteredLists = []
         if (this.status == 'process') {
-          for (let key in lists) {
-            if (!lists[key].tasks.length) {
-              filteredLists.push({ id: key, name: lists[key].name, tasks: lists[key].tasks })
+          lists.forEach(l => {
+            if (!l.tasks.length) {
+              filteredLists.push(l)
             } else {
-              for (let i = 0; i < lists[key].tasks.length; i++) {
-                if (!lists[key].tasks[i].done) {
-                  filteredLists.push({ id: key, name: lists[key].name, tasks: lists[key].tasks })
+              for (let i = 0; i < l.tasks.length; i++) {
+                if (!l.tasks[i].done) {
+                  filteredLists.push(l)
                   break
                 }
               }
             }
-          }
+          })
         } else if (this.status == 'done') {
-          for (let key in lists) {
-            if (lists[key].tasks.length) {
+          lists.forEach(l => {
+            if (l.tasks.length) {
               let flag = true
-              for (let i = 0; i < lists[key].tasks.length; i++) {
-                if (!lists[key].tasks[i].done) {
+              for (let i = 0; i < l.tasks.length; i++) {
+                if (!l.tasks[i].done) {
                   flag = false
                   break
                 }
               }
               if (flag)
-                filteredLists.push({ id: key, name: lists[key].name, tasks: lists[key].tasks })
+                filteredLists.push(l)
             }
-          }
+          })
         } else {
-          for (let key in lists)
-            filteredLists.push({ id: key, name: lists[key].name, tasks: lists[key].tasks })
+          filteredLists = lists
         }
         return filteredLists
       }
+      // error() {
+      //   return this.$store.getters.getError.message
+      // }
     },
     components: {
       Tasks

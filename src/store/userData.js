@@ -132,18 +132,7 @@ export default {
             tasks: list.tasks
           })
           .then(() => {
-            let oldLists = getters.getLists
-            let newLists = []
-            let i = 0
-            for (let key in oldLists) {
-              newLists[i] = {}
-              newLists[i].id = key
-              newLists[i].name = oldLists[key].name
-              newLists[i].tasks = oldLists[key].tasks
-              i++
-            }
             dispatch('LOAD_LISTS_PASSIVE', getters.userId)
-            commit('SET_LISTS', newLists)
             commit('SET_CURRENT_LIST', list)
             commit('SET_PROCESSING', false)
           })
@@ -176,18 +165,7 @@ export default {
             tasks: list.tasks
           })
           .then(() => {
-            let oldLists = getters.getLists
-            let newLists = []
-            let i = 0
-            for (let key in oldLists) {
-              newLists[i] = {}
-              newLists[i].id = key
-              newLists[i].name = oldLists[key].name
-              newLists[i].tasks = oldLists[key].tasks
-              i++
-            }
             dispatch('LOAD_LISTS_PASSIVE', getters.userId)
-            commit('SET_LISTS', newLists)
             commit('SET_CURRENT_LIST', list)
             commit('SET_PROCESSING', false)
           })
@@ -223,18 +201,7 @@ export default {
             tasks: list.tasks
           })
           .then(() => {
-            let oldLists = getters.getLists
-            let newLists = []
-            let i = 0
-            for (let key in oldLists) {
-              newLists[i] = {}
-              newLists[i].id = key
-              newLists[i].name = oldLists[key].name
-              newLists[i].tasks = oldLists[key].tasks
-              i++
-            }
             dispatch('LOAD_LISTS_PASSIVE', getters.userId)
-            commit('SET_LISTS', newLists)
             commit('SET_CURRENT_LIST', list)
             commit('SET_PROCESSING', false)
           })
@@ -274,18 +241,7 @@ export default {
             tasks: list.tasks
           })
           .then(() => {
-            let oldLists = getters.getLists
-            let newLists = []
-            let i = 0
-            for (let key in oldLists) {
-              newLists[i] = {}
-              newLists[i].id = key
-              newLists[i].name = oldLists[key].name
-              newLists[i].tasks = oldLists[key].tasks
-              i++
-            }
             dispatch('LOAD_LISTS_PASSIVE', getters.userId)
-            commit('SET_LISTS', newLists)
             commit('SET_CURRENT_LIST', list)
             commit('SET_PROCESSING', false)
           })

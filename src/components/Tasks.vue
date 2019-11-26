@@ -145,7 +145,7 @@
           setTimeout(() => {
             this.errorPopup = false
           }, 5000)
-        } else if (!(this.$store.getters.currentList.tasks.every(t => (t.name != this.newTaskName && t.id != this.taskId) || (t.name == this.newTaskName && t.id == this.taskId)))) {
+        } else if (!(this.$store.getters.currentList.tasks.every(t => (t.id != this.taskId && t.name != this.newTaskName) || (t.id == this.taskId)))) {
           this.errorMessage = 'Такое дело уже существует'
           this.errorPopup = true
           setTimeout(() => {

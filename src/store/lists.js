@@ -2,13 +2,11 @@ import Vue from 'vue'
 
 export default {
   state: {
-    lists: {}
+    lists: []
   },
   mutations: {
     SET_LISTS(state, payload) {
-      payload.forEach(l => {
-        Vue.set(state.lists, l.id, { name: l.name, tasks: l.tasks })
-      })
+      Vue.set(state, 'lists', payload)
     }
   },
   actions: {
@@ -80,7 +78,6 @@ export default {
           .catch(error => {
             console.log(error)
             commit('SET_PROCESSING', false)
-            commit('SET_LOADING', false)
           })
       }
     }
