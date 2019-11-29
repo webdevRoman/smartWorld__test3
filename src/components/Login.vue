@@ -65,39 +65,36 @@ export default {
 </script>
 
 <style scoped lang="sass">
+$light-color: #f9f9f9
+$dark-color: #35495e
+$shadow: 5px 5px 15px rgba(#000, 0.3)
+
 .login
   width: 450px
-  padding: 30px 0 50px 0
+  padding: 100px 50px 110px 50px
   border: 2px solid #2c3e50
-  border-radius: 10px
-  background-color: #fff
+  background-color: $light-color
+  box-shadow: $shadow
   &-title
-    padding-bottom: 30px
-    border-bottom: 2px solid #2c3e50
     font-size: 24px
+    font-weight: 100
+    text-transform: uppercase
     text-align: center
-    margin-bottom: 30px
+    margin-bottom: 50px
   &-warning
-    width: 90%
     padding: 20px
     background-color: #FFEB3B
     border: 2px solid #FFC107
-    margin: 0 auto 30px auto
+    margin-bottom: 30px
   &-block
-    width: 90%
-    margin: 0 auto 30px auto
+    border-bottom: 2px solid $dark-color
     display: flex
     justify-content: center
     align-items: center
-    overflow: hidden
+    margin-bottom: 20px
     &__icon
       flex-basis: 15%
       padding: 10px
-      background-color: rgba(#000, 0.15)
-      border: 2px solid rgba(#000, 0.2)
-      border-top-left-radius: 5px
-      border-bottom-left-radius: 5px
-      height: 55px
       display: flex
       justify-content: center
       align-items: center
@@ -105,18 +102,18 @@ export default {
         max-height: 40px
     &__input
       flex-basis: 85%
-      padding: 10px
-      border: 2px solid rgba(#000, 0.2)
-      border-left: none
-      border-top-right-radius: 5px
-      border-bottom-right-radius: 5px
+      padding: 15px
+      background-color: transparent
+      border: none
       font-size: 20px
-      height: 55px
       &::placeholder
         color: rgba(#000, 0.5)
   &-btn
     display: block
-    margin: 50px auto 0 auto
+    width: 100%
+    margin-top: 30px
+    padding: 20px
+    font-size: 16px
     &:disabled
       cursor: default
       background-color: rgba(#2980b9, 0.2)

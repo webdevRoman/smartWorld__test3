@@ -1,7 +1,18 @@
 <template>
   <div id="app">
-    <div class="loading" v-if="loadingData">Загружаем данные...</div>
-    <Login v-else-if="!isUserAuthenticated"></Login>
+    <Login v-if="!isUserAuthenticated"></Login>
+    <div class="loading" v-else-if="loadingData">
+      <div>
+        <div class="loading-img">
+          <svg width="526" height="526" viewBox="0 0 526 526" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M263 513C401.071 513 513 401.071 513 263C513 124.929 401.071 13 263 13C124.929 13 13 124.929 13 263" stroke="#3C6D85" stroke-width="25" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="loading-text">
+          Загружаем данные...
+        </div>
+      </div>
+    </div>
     <div class="app" v-else>
       <Header></Header>
       <Lists></Lists>
@@ -31,9 +42,17 @@ export default {
 </script>
 
 <style lang="sass">
+$light-color: #f9f9f9
+$light-text-color: #fff
+$dark-color: #35495e
+// $active-color: #347474
+$active-color: #3c6d85
+$shadow: 5px 5px 15px rgba(#000, 0.3)
+
 body
   margin: 0
-  font-family: "Arial", sans-serif
+  background-color: $light-color
+  font-family: "Roboto", sans-serif
 *
   box-sizing: border-box
 img, svg
@@ -45,17 +64,19 @@ h1, h2, h3
   justify-content: space-between
   align-items: flex-start
 .btn
-  padding: 10px 25px
+  padding: 12px 30px
   border: none
-  background-color: #2980b9
-  border-radius: 10px
-  font-size: 16px
-  color: #fff
+  background-color: $active-color
+  font-size: 14px
+  font-weight: 100
+  text-transform: uppercase
+  letter-spacing: 1px
+  color: $light-text-color
   text-decoration: none
   cursor: pointer
   transition: 0.3s
   &:hover
-    background-color: darken(#2980b9, 10)
+    background-color: darken($active-color, 10)
 .overlay
   position: fixed
   top: 0
@@ -68,14 +89,13 @@ h1, h2, h3
   align-items: center
 .popup
   position: relative
-  padding: 30px
-  border: 2px solid #2c3e50
-  border-radius: 10px
-  background-color: #fff
+  padding: 70px 40px 60px 40px
+  background-color: $light-color
+  box-shadow: $shadow
   text-align: center
   &-close
     position: absolute
-    top: -30px
+    top: -40px
     right: -30px
     font-size: 36px
     color: #fff
@@ -84,15 +104,17 @@ h1, h2, h3
     &:hover
       transform: rotate(90deg)
   &-title
-    font-size: 24px
-    margin-bottom: 30px
+    font-size: 22px
+    margin-bottom: 50px
   &-input
     display: block
     width: 100%
     padding: 10px
-    border: 2px solid #2c3e50
-    border-radius: 5px
+    background-color: transparent
+    border: none
+    border-bottom: 2px solid $dark-color
     font-size: 16px
+    text-align: center
     margin-bottom: 30px
   &-delete
     &__btn
@@ -100,6 +122,7 @@ h1, h2, h3
         margin-right: 30px
   &-error
     width: 500px
+    padding: 20px 10px
     .popup-title
       display: flex
       align-items: center
@@ -109,47 +132,58 @@ h1, h2, h3
       display: flex
       justify-content: center
       align-items: center
-      width: 50px
-      height: 50px
-      border-radius: 50%
-      background-color: rgba(#d50000, 0.4)
-      font-size: 42px
+      min-width: 40px
+      width: 40px
+      height: 40px
+      background-color: rgba(#d50000, 0.2)
+      font-size: 38px
       color: #d50000
-      margin-right: 20px
+      margin-right: 30px
   &-success
     width: 500px
-    position: absolute
+    padding: 20px 10px
+    position: fixed
     top: 10px
     right: 10px
     .popup-title
       display: flex
       align-items: center
       text-align: left
+      font-size: 20px
       margin-bottom: 0
     &__tick
       display: flex
       justify-content: center
       align-items: center
-      min-width: 50px
-      width: 50px
-      height: 50px
+      min-width: 40px
+      width: 40px
+      height: 40px
       padding: 10px
-      border-radius: 50%
       background-color: rgba(#2E7D32, 0.4)
       margin-right: 20px
 .loading
-  min-height: 95vh
+  position: fixed
+  height: 100vh
+  width: 100vw
   display: flex
   justify-content: center
   align-items: center
-  font-size: 32px
-  animation: glow  1.5s infinite ease-in-out
+  &-img
+    display: flex
+    justify-content: center
+    align-items: center
+    width: 100px
+    height: 100px
+    margin: 0 auto 30px auto
+    animation: load 0.7s infinite linear
+  &-text
+    font-size: 24px
 
-@keyframes glow
+@keyframes load
   from
-    opacity: 1
+    transform: rotate(0)
   50%
-    opacity: 0.3
+    transform: rotate(180deg)
   to
-    opacity: 1
+    transform: rotate(360deg)
 </style>

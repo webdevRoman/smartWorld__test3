@@ -44,14 +44,17 @@ export default {
 </script>
 
 <style scoped lang="sass">
+$light-text-color: #fff
+$dark-color: #35495e
+
 .header
   padding: 20px 40px
-  background-color: #2c3e50
+  background-color: $dark-color
   display: flex
   justify-content: space-between
   align-items: center
   font-size: 18px
-  color: #fff
+  color: $light-text-color
   &-right
     display: flex
     justify-content: flex-start

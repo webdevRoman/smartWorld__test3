@@ -9,7 +9,7 @@
       </select>
     </div>
     <div class="left-lists">
-      <div :class="listClass(list)" v-for="list in filteredLists" :key="list.id" @click.prevent="setCurrentList(list)">
+      <div :class="listClass(list)" v-for="(list, i) in filteredLists" :key="list.id" @click.prevent="setActiveCard(list, i)">
         <div class="left-list__name">{{ list.name }}</div>
         <div class="left-list__buttons">
           <button class="btn left-list__btn" @click.prevent="showListPopup(list.name, list.id)">
@@ -23,6 +23,9 @@
     </div>
     <button class="btn left-btn" @click.prevent="showListPopup(null, null)">+</button>
   </div>
+
+  <div class="separator"></div>
+
   <div v-if="currentList" class="right">
     <Tasks :list="currentList"></Tasks>
   </div>
@@ -44,7 +47,8 @@
     <div class="popup popup-delete">
       <div class="popup-close" @click.prevent="deleteListPopup = false">&times;</div>
       <div class="popup-title">
-        Вы действительно хотите удалить список дел "{{ currentList.name }}"?<br><br>Все связанные дела ({{ currentList.tasks.length }} шт.) также будут удалены:
+        Вы действительно хотите удалить список дел "{{ currentList.name }}"?
+        {{ currentList.tasks.length ? `\n\nВсе связанные дела (${currentList.tasks.length} шт.) также будут удалены:` : '' }}
         <ul>
           <li v-for="(task, i) in currentList.tasks" :key="i">{{ task.name }}</li>
         </ul>
@@ -93,6 +97,14 @@
       }
     },
     methods: {
+      setActiveCard(list, index) {
+        const lists = document.querySelectorAll('.left-list')
+        lists.forEach(l => {
+          l.classList.remove('left-list_active')
+        })
+        lists[index].classList.add('left-list_active')
+        this.setCurrentList(list)
+      },
       setCurrentList(list) {
         this.$store.dispatch('SET_CURRENT_LIST', list)
         this.currentList = this.$store.getters.currentList
@@ -163,6 +175,10 @@
           this.successMessage = `Список дел "${this.newListName}" изменён`
           this.newListName = null
           this.currentList = null
+          const lists = document.querySelectorAll('.left-list')
+          lists.forEach(l => {
+            l.classList.remove('left-list_active')
+          })
           this.successPopup = true
           setTimeout(() => {
             this.successPopup = false
@@ -196,9 +212,6 @@
       }
     },
     computed: {
-      // lists() {
-      //   return this.$store.getters.getLists
-      // },
       filteredLists() {
         let lists = this.$store.getters.getLists
         let filteredLists = []
@@ -234,9 +247,6 @@
         }
         return filteredLists
       }
-      // error() {
-      //   return this.$store.getters.getError.message
-      // }
     },
     components: {
       Tasks
@@ -245,36 +255,47 @@
 </script>
 
 <style scoped lang="sass">
+$light-color: #f9f9f9
+$light-text-color: #fff
+$dark-color: #35495e
+$active-color: #3c6d85
+$shadow: 5px 5px 15px rgba(#000, 0.3)
+
+.container
+  align-items: stretch
+  justify-content: flex-start
 .left
-  flex-basis: 35%
-  min-width: 400px
+  width: 400px
   min-height: 90vh
-  padding: 50px 0
-  border-right: 3px solid #2c3e50
+  padding: 40px 20px 90px 20px
+  background-color: $light-color
+  box-shadow: inset 0 0 15px rgba(#000, 0.3)
   position: relative
   &-filter
-    width: 90%
-    margin: 0 auto 50px auto
+    margin-bottom: 40px
     &__select
       width: 100%
       padding: 10px
-      border: 2px solid #2c3e50
-      border-radius: 5px
+      border: 2px solid $active-color
       font-size: 16px
+      appearance: none
+      background: url(../assets/arrow.svg) 100% / 12% no-repeat #fff
+      cursor: pointer
+      &::-ms-expand
+        display: none
   &-list
     display: flex
     justify-content: space-between
     align-items: center
     padding: 5px 10px
-    border-bottom: 2px solid #2c3e50
+    background-color: #fff
+    box-shadow: 5px 5px 10px rgba(#000, 0.3)
+    margin-bottom: 10px
     transition: 0.3s
     cursor: pointer
     &:hover
-      background-color: rgba(#2c3e50, 0.2)
-    &:first-child
-      border-top: 2px solid #2c3e50
-    &:last-child
-      margin-bottom: 100px
+      box-shadow: 5px 5px 15px rgba(#000, 0.4)
+      transform: scale(1.02)
     &__name
       font-size: 18px
     &__buttons
@@ -292,28 +313,38 @@
     &_empty
       background-color: #fff
     &_done
-      background-color: grey
+      background-color: #ccc
     &_process
-      background-color: green
+      background-color: #42b883
+    &_active
+      box-shadow: 5px 5px 15px rgba(#000, 0.4)
+      transform: scale(1.02)
   &-btn
-    display: flex
-    justify-content: center
-    align-items: center
-    padding: 0 10px 5px 10px
-    font-size: 40px
+    width: 50px
+    height: 50px
+    padding: 0
+    font-size: 28px
     position: absolute
-    bottom: 30px
-    left: 30px
-.right
-  flex-basis: 65%
+    bottom: 20px
+    left: 20px
+.separator
+  width: 5px
   min-height: 90vh
+  background-color: #2c3e50
+.right
+  flex-grow: 1
+  min-height: 90vh
+  background-color: $light-color
+  box-shadow: inset 0 0 15px rgba(#000, 0.3)
   &-choose
-    flex-basis: 65%
+    flex-grow: 1
     min-height: 90vh
+    background-color: $light-color
     display: flex
     justify-content: center
     align-items: center
     font-size: 32px
+    box-shadow: inset 0 0 15px rgba(#000, 0.3)
 .popup
   width: 500px
 </style>
