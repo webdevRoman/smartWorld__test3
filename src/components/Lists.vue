@@ -256,10 +256,7 @@
 
 <style scoped lang="sass">
 $light-color: #f9f9f9
-$light-text-color: #fff
-$dark-color: #35495e
 $active-color: #3c6d85
-$shadow: 5px 5px 15px rgba(#000, 0.3)
 
 .container
   align-items: stretch
@@ -295,7 +292,7 @@ $shadow: 5px 5px 15px rgba(#000, 0.3)
     cursor: pointer
     &:hover
       box-shadow: 5px 5px 15px rgba(#000, 0.4)
-      transform: scale(1.02)
+      transform: scale(1.04)
     &__name
       font-size: 18px
     &__buttons
@@ -318,7 +315,7 @@ $shadow: 5px 5px 15px rgba(#000, 0.3)
       background-color: #42b883
     &_active
       box-shadow: 5px 5px 15px rgba(#000, 0.4)
-      transform: scale(1.02)
+      transform: scale(1.04)
   &-btn
     width: 50px
     height: 50px
@@ -335,15 +332,12 @@ $shadow: 5px 5px 15px rgba(#000, 0.3)
   flex-grow: 1
   min-height: 90vh
   background-color: $light-color
-  box-shadow: inset 0 0 15px rgba(#000, 0.3)
   &-choose
     flex-grow: 1
     min-height: 90vh
+    padding: 50px 20px
     background-color: $light-color
-    display: flex
-    justify-content: center
-    align-items: center
-    font-size: 32px
+    font-size: 24px
     box-shadow: inset 0 0 15px rgba(#000, 0.3)
 .popup
   width: 500px

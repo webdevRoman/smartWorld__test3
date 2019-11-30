@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import App from './App.vue'
-import router from './router'
 import store from './store/index'
 import firebase from 'firebase'
 import 'firebase/firestore'
@@ -14,7 +13,6 @@ const db = firebaseApp.firestore()
 Vue.$db = db
 
 new Vue({
-  router,
   store,
   render: h => h(App),
   created() {

@@ -208,31 +208,40 @@
 </script>
 
 <style scoped lang="sass">
+$light-color: #f9f9f9
+$light-text-color: #fff
+$dark-color: #35495e
+// $active-color: #347474
+$active-color: #3c6d85
+$shadow: 5px 5px 15px rgba(#000, 0.3)
+
 .list
   min-height: 90vh
-  padding: 50px 30px
+  padding: 50px 0 90px 0
   position: relative
   &-title
-    font-size: 26px
+    font-size: 24px
     font-weight: normal
-    text-align: center
-    margin-bottom: 50px
+    margin-left: 20px
+    margin-bottom: 45px
   &-item
     display: flex
     justify-content: space-between
     align-items: center
-    padding: 5px 10px 5px 40px
-    border-bottom: 2px solid #2c3e50
+    padding: 10px 25px 10px 55px
     position: relative
+    &:nth-child(odd)
+      background-color: darken($light-color, 5)
+    &:nth-child(even)
+      background-color: $light-color
     &__priority
-      width: 14px
-      height: 14px
+      width: 16px
+      height: 16px
       background-color: #b71c1c
-      border-radius: 50%
       position: absolute
       top: 50%
-      left: 10px
-      margin-top: -7px
+      left: 25px
+      margin-top: -8px
     &__name
       font-size: 18px
     &__date
@@ -250,16 +259,16 @@
       &:last-child
         margin-left: 10px
   &-noitems
+    padding: 0 20px
     font-size: 20px
-    text-align: center
+    margin-top: 60px
   &-btn
-    display: flex
-    justify-content: center
-    align-items: center
-    padding: 0 10px 5px 10px
-    font-size: 40px
+    width: 50px
+    height: 50px
+    padding: 0
+    font-size: 28px
     position: absolute
-    bottom: 30px
+    bottom: 20px
     left: 30px
 
 .list-item__checkbox
@@ -278,8 +287,7 @@
   width: 18px
   height: 18px
   border: 2px solid #2c3e50
-  border-radius: 5px
-  background: #fff
+  background: transparent
   transition: 0.3s
 .list-item__checkbox + label:after
   content: ''
