@@ -5,7 +5,7 @@
     <div class="list-item" v-for="(task, i) in sortedTasks" :key="task.id">
       <div class="list-item__priority" v-if="task.priority"></div>
       <div class="list-item__block">
-        <input class="list-item__checkbox" type="checkbox" name="done" v-model="task.done" :id="generateCheckboxId(i)" @click.prevent="changeTaskDone(task.id, $event)">
+        <input class="list-item__checkbox" type="checkbox" name="done" v-model="task.done" :id="generateCheckboxId(i)" @click="changeTaskDone(task.id)">
         <label class="list-item__name" :for="generateCheckboxId(i)">{{ task.name }}</label>
       </div>
       <div class="list-item__block">
@@ -122,6 +122,7 @@
             this.errorPopup = false
           }, 5000)
         } else {
+          
           this.$store.dispatch('ADD_USER_TASK', { listId: this.list.id, taskName: this.newTaskName, taskPriority: this.newTaskPriority })
           this.taskPopup = false
           this.successMessage = `Дело "${this.newTaskName}" добавлено`
@@ -162,19 +163,8 @@
           }, 3000)
         }
       },
-      changeTaskDone(taskId, event) {
-        for (let i = 0; i < this.$store.getters.currentList.tasks.length; i++) {
-          let t = this.$store.getters.currentList.tasks[i]
-          if (t.id == taskId) {
-            if (t.done) {
-              break
-            } else {
-              event.target.checked = true
-              this.$store.dispatch('CHANGE_TASK_DONE', { listId: this.list.id, taskId: taskId })
-              break
-            }
-          }
-        }
+      changeTaskDone(taskId) {
+        this.$store.dispatch('CHANGE_TASK_DONE', { listId: this.list.id, taskId: taskId })
       },
       showDeleteTaskPopup(task) {
         this.currentTask = task
@@ -288,7 +278,7 @@ $shadow: 5px 5px 15px rgba(#000, 0.3)
   height: 18px
   border: 2px solid #2c3e50
   background: transparent
-  transition: 0.3s
+  transition: 0.1s
 .list-item__checkbox + label:after
   content: ''
   position: absolute

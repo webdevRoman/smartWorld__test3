@@ -132,8 +132,8 @@ export default {
             tasks: list.tasks
           })
           .then(() => {
-            dispatch('LOAD_LISTS_PASSIVE', getters.userId)
             commit('SET_CURRENT_LIST', list)
+            dispatch('LOAD_LISTS_PASSIVE', getters.userId)
             commit('SET_PROCESSING', false)
           })
           .catch((error) => {
@@ -165,8 +165,8 @@ export default {
             tasks: list.tasks
           })
           .then(() => {
-            dispatch('LOAD_LISTS_PASSIVE', getters.userId)
             commit('SET_CURRENT_LIST', list)
+            dispatch('LOAD_LISTS_PASSIVE', getters.userId)
             commit('SET_PROCESSING', false)
           })
           .catch((error) => {
@@ -194,15 +194,15 @@ export default {
           list.id = payload.listId
           list.tasks.forEach(t => {
             if (t.id == payload.taskId) {
-              t.done = true
+              t.done = !t.done
             }
           })
           userDataRef.update({
             tasks: list.tasks
           })
           .then(() => {
-            dispatch('LOAD_LISTS_PASSIVE', getters.userId)
             commit('SET_CURRENT_LIST', list)
+            dispatch('LOAD_LISTS_PASSIVE', getters.userId)
             commit('SET_PROCESSING', false)
           })
           .catch((error) => {
@@ -241,8 +241,8 @@ export default {
             tasks: list.tasks
           })
           .then(() => {
-            dispatch('LOAD_LISTS_PASSIVE', getters.userId)
             commit('SET_CURRENT_LIST', list)
+            dispatch('LOAD_LISTS_PASSIVE', getters.userId)
             commit('SET_PROCESSING', false)
           })
           .catch((error) => {

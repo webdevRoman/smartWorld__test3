@@ -2,7 +2,7 @@
 <div>
   <header class="header">
     <div class="header-right">
-      <router-link class="header-logo" to="/" tag="div">ToDo List</router-link>
+      <div class="header-logo">ToDo List</div>
       <div class="header-username">{{ login }}</div>
     </div>
     <button class="btn header-btn" @click.prevent="signoutConfirm = true" :disabled="processing">Выйти</button>
